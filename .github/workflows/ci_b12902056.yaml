@@ -1,53 +1,53 @@
 name: ci-b12902056
 
 on:
-    push:
-        branches:
-            - "**"
+  push:
+    branches:
+      - '**'
 
 permissions:
-    contents: read
-    checks: write
+  contents: read
+  checks: write
 
 jobs:
-    ci:
-        runs-on: ubuntu-latest
-        steps:
-            - name: Checkout
-              uses: actions/checkout@v4
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
 
-            - name: Setup Node.js
-              uses: actions/setup-node@v4
-              with:
-                  node-version: "22"
-                  cache: npm
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
 
-            - name: Install dependencies
-              run: npm ci
+      - name: Install dependencies
+        run: npm ci
 
-            - name: TypeScript typecheck
-              run: npm run typecheck
+      - name: TypeScript typecheck
+        run: npm run typecheck
 
-            - name: Prettier check
-              run: npm run format:check
+      - name: Prettier check
+        run: npm run format:check
 
-            - name: Run tests (JUnit reporter)
-              run: |
-                  mkdir -p reports
-                  npm test -- --reporter=default --reporter=junit --outputFile.junit=reports/vitest-junit.xml
+      - name: Run tests (JUnit reporter)
+        run: |
+          mkdir -p reports
+          npm test -- --reporter=default --reporter=junit --outputFile.junit=reports/vitest-junit.xml
 
-            - name: Upload test report artifact
-              if: always()
-              uses: actions/upload-artifact@v4
-              with:
-                  name: test-report-b12902056
-                  path: reports/
-                  if-no-files-found: error
+      - name: Upload test report artifact
+        if: ${{ always() && !env.ACT }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report-b12902056
+          path: reports/
+          if-no-files-found: error
 
-            - name: Publish test report (inline on Actions page)
-              if: always()
-              uses: dorny/test-reporter@v1
-              with:
-                  name: Vitest results
-                  path: reports/vitest-junit.xml
-                  reporter: jest-junit
+      - name: Publish test report (inline on Actions page)
+        if: ${{ always() && !env.ACT }}
+        uses: dorny/test-reporter@v1
+        with:
+          name: Vitest results
+          path: reports/vitest-junit.xml
+          reporter: jest-junit

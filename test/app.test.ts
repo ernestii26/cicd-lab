@@ -48,6 +48,4 @@ describe('Fastify app', () => {
       await app.close();
     }
   });
-
-
 });
