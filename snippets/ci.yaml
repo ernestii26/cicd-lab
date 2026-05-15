@@ -60,6 +60,11 @@ jobs:
         if: ${{ matrix.node-version == '24' }}
         run: docker build -t my-app:${{ steps.meta.outputs.image_tag }} .
 
+      - name: Format check
+        run: npm run format:check
+      - name: Lint
+        run: npm run lint
+
   cd:
     if: ${{ startsWith(github.ref, 'refs/heads/release/') }}
     needs: ci
